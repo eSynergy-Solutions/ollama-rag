@@ -1,0 +1,16 @@
+POST http://127.0.0.1:6969/ask
+Content-Type: application/json
+
+{
+  "question": "What is the capital of France?"
+}
+
+###
+
+POST http://127.0.0.1:6969/add_urls
+Content-Type: application/json
+
+{
+  "urls": ["https://stackoverflow.com/questions/31778413/run-javascript-in-visual-studio-code"]
+}
+
