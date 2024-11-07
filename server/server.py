@@ -5,7 +5,6 @@ from rag_app import RAGApplication
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 from typing import List
-import json
 
 app = FastAPI()
 
