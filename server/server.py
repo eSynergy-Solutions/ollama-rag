@@ -21,6 +21,9 @@ app.add_middleware(
 class QuestionRequest(BaseModel):
     question: str
 
+class ServerChatResponse(BaseModel):
+    response: str
+
 class UrlsRequest(BaseModel):
     urls: List[str]
 
@@ -32,7 +35,7 @@ async def add_urls(request: UrlsRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/ask/", response_class=JSONResponse)
+@app.post("/ask/", response_class=JSONResponse, response_model=ServerChatResponse)
 async def ask_question(request: QuestionRequest):
     try:
         response = r_app.run(request.question)
