@@ -5,11 +5,18 @@ from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain_community.vectorstores import SKLearnVectorStore
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+import os
+from dotenv import load_dotenv
+# Load environment variables from .env.local file
+load_dotenv(dotenv_path='.env.local')
+
+embedding_model = os.getenv('OLLAMA_EMBEDDING_MODEL')
+llm_model = os.getenv('OLLAMA_RAG_LLM')
 
 class RAGApplication:
     def __init__(self, urls: List[str]):
         self.urls = urls
-        self.ollama_embeddings = OllamaEmbeddings(model="nomic-embed-text:latest")
+        self.ollama_embeddings = OllamaEmbeddings(model=embedding_model)
         self.vectorstore = SKLearnVectorStore(embedding=self.ollama_embeddings)
         
         # Load initial documents and set up retriever
@@ -30,7 +37,7 @@ class RAGApplication:
         )
 
         # Initialize the LLM with Llama 3.1 model
-        llm = ChatOllama(model="llama3.2:1b", temperature=0)
+        llm = ChatOllama(model=llm_model, temperature=0)
 
         # Create a chain combining the prompt template and LLM
         self.rag_chain = prompt | llm | StrOutputParser()
