@@ -1,4 +1,4 @@
-import rag_app
+import rag_app as rag_app
 
 # Example usage
 urls = [

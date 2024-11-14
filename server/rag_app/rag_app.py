@@ -1,3 +1,4 @@
+from typing import List
 from langchain_community.document_loaders import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -6,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 class RAGApplication:
-    def __init__(self, urls):
+    def __init__(self, urls: List[str]):
         self.urls = urls
         self.ollama_embeddings = OllamaEmbeddings(model="nomic-embed-text:latest")
         self.vectorstore = SKLearnVectorStore(embedding=self.ollama_embeddings)
