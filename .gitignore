@@ -3,3 +3,5 @@
 /server/__pycache__/
 /__pycache__/
 *__pycache__/
+
+/chat_history

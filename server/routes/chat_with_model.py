@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import List
 from rag_app.rag_app import RAGApplication
@@ -28,10 +28,17 @@ async def add_urls(request: UrlsRequest):
 
 @router.post("/ask/", response_class=JSONResponse, response_model=ServerChatResponse)
 async def ask_question(request: QuestionRequest):
+    await post_chat_message(request)
     try:
-        await post_chat_message(request)
         rag_response = r_app.run(request.question)
         await post_chat_message({"response": rag_response})
         return {"response": rag_response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
+@router.post("/ask-stream/", response_class=StreamingResponse)
+async def ask_question_stream(request: QuestionRequest):
+    try:
+        return StreamingResponse(r_app.run_stream(request.question), media_type="text/event-stream")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

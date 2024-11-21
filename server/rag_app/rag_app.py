@@ -10,13 +10,12 @@ from dotenv import load_dotenv
 # Load environment variables from .env.local file
 load_dotenv(dotenv_path='.env.local')
 
-embedding_model = os.getenv('OLLAMA_EMBEDDING_MODEL')
-llm_model = os.getenv('OLLAMA_RAG_LLM')
-
 class RAGApplication:
     def __init__(self, urls: List[str]):
+        self.embedding_model = os.getenv('OLLAMA_EMBEDDING_MODEL') or "nomic-embed-text:latest"
+        self.llm_model = os.getenv('OLLAMA_RAG_LLM') or "llama3.2:1b"
         self.urls = urls
-        self.ollama_embeddings = OllamaEmbeddings(model=embedding_model)
+        self.ollama_embeddings = OllamaEmbeddings(model=self.embedding_model)
         self.vectorstore = SKLearnVectorStore(embedding=self.ollama_embeddings)
         
         # Load initial documents and set up retriever
@@ -37,7 +36,7 @@ class RAGApplication:
         )
 
         # Initialize the LLM with Llama 3.1 model
-        llm = ChatOllama(model=llm_model, temperature=0)
+        llm = ChatOllama(model=self.llm_model, temperature=0)
 
         # Create a chain combining the prompt template and LLM
         self.rag_chain = prompt | llm | StrOutputParser()
@@ -73,3 +72,12 @@ class RAGApplication:
         # Get the answer from the language model
         answer = self.rag_chain.invoke({"question": question, "documents": doc_texts})
         return answer
+    
+    def run_stream(self, question):
+        # Retrieve relevant documents
+        documents = self.retriever.invoke(question)
+        # Extract content from retrieved documents
+        doc_texts = "\n".join([doc.page_content for doc in documents])
+        # Get the answer from the language model
+        for chunk in self.rag_chain.stream({"question": question, "documents": doc_texts}):
+            yield chunk
