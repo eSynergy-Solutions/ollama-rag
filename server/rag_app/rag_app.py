@@ -73,7 +73,7 @@ class RAGApplication:
         answer = self.rag_chain.invoke({"question": question, "documents": doc_texts})
         return answer
     
-    def run_stream(self, question):
+    async def run_stream(self, question):
         # Retrieve relevant documents
         documents = self.retriever.invoke(question)
         # Extract content from retrieved documents

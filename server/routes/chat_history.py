@@ -6,7 +6,7 @@ import os
 
 router = APIRouter()
 
-CHAT_HISTORY_FILE = 'server/chat_history/chat_history.json'
+CHAT_HISTORY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'chat_history', 'chat_history.json')
 
 class ChatEntryQuestion(BaseModel):
     question: str
